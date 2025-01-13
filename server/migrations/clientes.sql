@@ -3,6 +3,6 @@ CREATE TABLE clientes (
   nome VARCHAR(100) NOT NULL,
   email VARCHAR(100) NOT NULL,
   telefone VARCHAR(15) NOT NULL,
-  tipoDocumentos INTEGER(1) NOT NULL,
+  tipo_documento INTEGER NOT NULL,
   documento VARCHAR(14) NOT NULL UNIQUE
 );

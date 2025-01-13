@@ -26,8 +26,8 @@ export const buscarCliente = async (req, res) => {
 
 export const criarCliente = async (req, res) => {
   try {
-    const { nome, email, telefone } = req.body;
-    const cliente = await clienteModel.createCliente(nome, email, telefone);
+    const { nome, email, telefone, tipo_documento, documento } = req.body;
+    const cliente = await clienteModel.createCliente(nome, email, telefone, tipo_documento, documento);
     res.status(201).json(cliente);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -37,8 +37,8 @@ export const criarCliente = async (req, res) => {
 export const atualizarCliente = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nome, email, telefone } = req.body;
-    const cliente = await clienteModel.updateCliente(id, nome, email, telefone);
+    const { nome, email, telefone, tipo_documento, documento } = req.body;
+    const cliente = await clienteModel.updateCliente(id, nome, email, telefone, tipo_documento, documento);
 
     if (!cliente) {
       return res.status(404).json({ mensagem: 'Cliente não encontrado' });
