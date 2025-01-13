@@ -25,7 +25,7 @@ function App() {
           onClick={() => setCount((count) => count + 1)}
         >
           count is {count}
-        </Button> {/* Usando o botão do MUI */}
+        </Button>
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>
