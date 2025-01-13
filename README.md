@@ -1,4 +1,4 @@
-Sistema simples para cadastro de clientes, para estudos.
+Monorepo de um sistema simples para cadastro de clientes, para estudos.
 
 -React
 -Javascript
