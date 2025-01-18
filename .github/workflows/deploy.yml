@@ -1,16 +1,20 @@
-name: Deploy para a Vercel
+name: Deploy para o GitHub Pages
 
 on:
   workflow_dispatch:
 
 permissions:
   contents: read
+  pages: write
   id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
@@ -20,16 +24,17 @@ jobs:
         with:
           node-version: 18
 
-      - name: Instalar dependências (pasta app)
-        run: cd app && npm install
+      - name: Instalar dependências
+        run: cd app/ && npm install
 
-      - name: Criar build (pasta app)
-        run: cd app && npm run build
+      - name: Criar build
+        run: cd app/ && npm run build
 
-      - name: Instalar Vercel CLI
-        run: npm install -g vercel
+      - name: Upload build para GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./app/dist"
 
-      - name: Deploy para Vercel
-        run: cd app && vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --confirm
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy para GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
