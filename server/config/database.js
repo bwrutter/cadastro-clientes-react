@@ -5,20 +5,22 @@ dotenv.config();
 
 const { Pool } = pg;
 
-/* export const pool = new Pool({
+export const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
-}); */
+  ssl: { rejectUnauthorized: false },
+});
 
-export const pool = new Pool({
+/* export const pool = new Pool({ TODO: Localmente, ajsutar depois
   user: 'postgres',
   host: 'localhost',
   database: 'postgres',
   password: '1234',
   port: 5432,
+  ssl: { rejectUnauthorized: false },
 });
 
 const criarBancoDeDados = async () => {
@@ -39,4 +41,4 @@ const criarBancoDeDados = async () => {
 
 (async () => {
   await criarBancoDeDados();
-})();
+})(); */
