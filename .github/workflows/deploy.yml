@@ -21,16 +21,15 @@ jobs:
           node-version: 18
 
       - name: Instalar dependências
-        run: npm install --prefix app 
+        run: cd app/ && npm install
 
       - name: Criar build
-        run: npm run build --prefix app
+        run: cd app/ && npm run build
 
       - name: Instalar Vercel CLI
         run: npm install -g vercel
 
       - name: Deploy para Vercel
-        run: |
-          vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --confirm
+        run: cd app/ && vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --confirm
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
