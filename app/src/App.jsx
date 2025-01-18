@@ -17,7 +17,7 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <Typography variant="h3" gutterBottom>Vite + React</Typography>
+      <Typography variant="h3" gutterBottom>Vite + React + Node</Typography>
       <div className="card">
         <Button 
           variant="contained" 
