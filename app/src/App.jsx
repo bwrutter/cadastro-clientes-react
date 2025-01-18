@@ -6,7 +6,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="cadastro-clientes-react/cadastro" element={<CadastroClientePage />} />
+        <Route path="/cadastro" element={<CadastroClientePage />} />
       </Routes>
     </Router>
   );
