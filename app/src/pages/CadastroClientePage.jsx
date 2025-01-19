@@ -143,10 +143,9 @@ export default function MiniDrawer() {
         </DrawerHeader>
         <Divider />
         <List>
-          {/* Item 1 - Clientes */}
           <ListItem disablePadding sx={{ display: 'block' }}>
             <ListItemButton
-              onClick={() => setSelectedMenu(selectedMenu === 'clientes' ? null : 'clientes')} // Alterna entre mostrar/esconder
+              onClick={() => setSelectedMenu(selectedMenu === 'clientes' ? null : 'clientes')}
               sx={{ minHeight: 48, px: 2.5, justifyContent: open ? 'initial' : 'center' }}
             >
               <ListItemIcon sx={{ minWidth: 0, justifyContent: 'center', mr: open ? 3 : 'auto' }}>
@@ -156,7 +155,6 @@ export default function MiniDrawer() {
             </ListItemButton>
           </ListItem>
 
-          {/* Item 2 - Outro Menu */}
           <ListItem disablePadding sx={{ display: 'block' }}>
             <ListItemButton
               onClick={() => setSelectedMenu(selectedMenu === 'outro' ? null : 'outro')}
