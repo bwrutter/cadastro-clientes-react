@@ -6,7 +6,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/cadastro" element={<CadastroClientePage />} />
+        <Route path="/" element={<CadastroClientePage />} />
       </Routes>
     </Router>
   );
