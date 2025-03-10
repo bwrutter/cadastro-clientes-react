@@ -28,9 +28,9 @@ export const criarCliente = async (req, res) => {
   try {
     const { nome, email, telefone, tipo_documento, documento } = req.body;
     const cliente = await clienteModel.createCliente(nome, email, telefone, tipo_documento, documento);
-    res.status(201).json(cliente);
+    return res.status(201).json(cliente);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ mensagem: 'Cliente ja cadastrado' });
   }
 };
 

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import CadastroClienteForm from '../components/CadastroClienteForm'
+import CadastroFinanceiro from '../components/CadastroFinanceiro'
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar from '@mui/material/AppBar';
@@ -18,6 +19,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import PeopleIcon from '@mui/icons-material/People';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import SsidChartIcon from '@mui/icons-material/SsidChart';
 
 const drawerWidth = 240;
 
@@ -157,29 +160,48 @@ export default function MiniDrawer() {
 
           <ListItem disablePadding sx={{ display: 'block' }}>
             <ListItemButton
-              onClick={() => setSelectedMenu(selectedMenu === 'outro' ? null : 'outro')}
+              onClick={() => setSelectedMenu(selectedMenu === 'financeiro' ? null : 'financeiro')}
               sx={{ minHeight: 48, px: 2.5, justifyContent: open ? 'initial' : 'center' }}
             >
               <ListItemIcon sx={{ minWidth: 0, justifyContent: 'center', mr: open ? 3 : 'auto' }}>
-                <PeopleIcon />
+                <MonetizationOnIcon />
               </ListItemIcon>
-              <ListItemText primary="Outro Menu" sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText primary="Financeiro" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              onClick={() => setSelectedMenu(selectedMenu === 'graficos' ? null : 'graficos')}
+              sx={{ minHeight: 48, px: 2.5, justifyContent: open ? 'initial' : 'center' }}
+            >
+              <ListItemIcon sx={{ minWidth: 0, justifyContent: 'center', mr: open ? 3 : 'auto' }}>
+                <SsidChartIcon />
+              </ListItemIcon>
+              <ListItemText primary="Gráficos" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
         </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         {selectedMenu === 'clientes' && (
-          <Typography sx={{ marginBottom: 2 }}>
+          <Box sx={{ marginBottom: 2 }}>
             <CadastroClienteForm />
-          </Typography>
+          </Box>
         )}
 
-        {selectedMenu === 'outro' && (
-          <Typography sx={{ marginBottom: 2 }}>
-            Consequat mauris nunc congue nisi vitae suscipit.
-          </Typography>
+        {selectedMenu === 'financeiro' && (
+          <Box sx={{ marginBottom: 2 }}>
+            <CadastroFinanceiro />
+          </Box>
         )}
+
+        {selectedMenu === 'graficos' && (
+          <Box sx={{ marginBottom: 2 }}>
+            <CadastroFinanceiro />
+          </Box>
+        )}
+
       </Box>
     </Box>
   );
