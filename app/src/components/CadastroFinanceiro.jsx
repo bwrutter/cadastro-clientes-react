@@ -39,7 +39,8 @@ const CadastroFinanceiro = () => {
     valor: '',
     tipo: 'SIMPLES',
     data_vencimento: null,
-    quantidade_meses: ''
+    quantidade_meses: '',
+    natureza: 'SAIDA'
   });
 
   // Estado para o diálogo de confirmação de pagamento
@@ -97,11 +98,15 @@ const CadastroFinanceiro = () => {
       const dadosBase = {
         ...formData,
         valor: Number(formData.valor),
-        data_vencimento: formData.data_vencimento.toISOString().split('T')[0]
+        data_vencimento: formData.natureza === 'ENTRADA' ? 
+          new Date().toISOString().split('T')[0] : // Para entradas, usa a data atual
+          formData.data_vencimento.toISOString().split('T')[0],
+        tipo: formData.natureza === 'ENTRADA' ? 'SIMPLES' : formData.tipo, // Entradas são sempre simples
+        status: formData.natureza === 'ENTRADA' ? 'PAGO' : 'PENDENTE' // Entradas já são pagas automaticamente
       };
 
-      if (formData.tipo === 'MENSAL' && Number(formData.quantidade_meses) > 1) {
-        // Criar registros para cada mês
+      if (formData.natureza === 'SAIDA' && formData.tipo === 'MENSAL' && Number(formData.quantidade_meses) > 1) {
+        // Criar registros para cada mês (apenas para saídas mensais)
         const promessas = [];
         const dataBase = new Date(formData.data_vencimento);
         const quantidadeMeses = Number(formData.quantidade_meses);
@@ -120,7 +125,7 @@ const CadastroFinanceiro = () => {
 
         await Promise.all(promessas);
       } else {
-        // Para contas simples ou mensais de parcela única
+        // Para entradas ou saídas simples
         await cadastrarConta(dadosBase);
       }
       
@@ -132,7 +137,8 @@ const CadastroFinanceiro = () => {
         valor: '',
         tipo: 'SIMPLES',
         data_vencimento: null,
-        quantidade_meses: ''
+        quantidade_meses: '',
+        natureza: 'SAIDA'
       });
     } catch (err) {
       console.error('Erro ao cadastrar conta:', err);
@@ -168,7 +174,8 @@ const CadastroFinanceiro = () => {
             valor: Number(conta.valor), // Garantir que o valor seja número
             tipo: 'SIMPLES', // Cada parcela é tratada como conta simples
             data_vencimento: format(novaData, 'yyyy-MM-dd'),
-            status: 'PENDENTE'
+            status: 'PENDENTE',
+            natureza: conta.natureza // Manter a natureza da conta original
           };
           promessas.push(cadastrarConta(novaConta));
         }
@@ -214,8 +221,30 @@ const CadastroFinanceiro = () => {
   const columns = [
     { field: 'id', headerName: 'ID', width: 70 },
     { field: 'descricao', headerName: 'Descrição', width: 200 },
-    { field: 'valor', headerName: 'Valor', width: 130, valueFormatter: (params) => 
-      new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(params.value)
+    { 
+      field: 'natureza', 
+      headerName: 'Natureza', 
+      width: 130,
+      renderCell: (params) => (
+        <Chip
+          label={params.value === 'ENTRADA' ? 'Entrada' : 'Saída'}
+          color={params.value === 'ENTRADA' ? 'info' : 'default'}
+          size="small"
+        />
+      )
+    },
+    { 
+      field: 'valor', 
+      headerName: 'Valor', 
+      width: 130, 
+      valueFormatter: (params) => {
+        if (!params.value) return '';
+        const valor = params.row?.natureza === 'ENTRADA' ? params.value : -params.value;
+        return new Intl.NumberFormat('pt-BR', { 
+          style: 'currency', 
+          currency: 'BRL' 
+        }).format(valor);
+      }
     },
     { field: 'tipo', headerName: 'Tipo', width: 130 },
     { field: 'data_vencimento', headerName: 'Vencimento', width: 130, valueFormatter: (params) =>
@@ -261,7 +290,8 @@ const CadastroFinanceiro = () => {
             valor: '',
             tipo: 'SIMPLES',
             data_vencimento: null,
-            quantidade_meses: ''
+            quantidade_meses: '',
+            natureza: 'SAIDA'
           });
           setOpenDialog(true);
         }}>
@@ -295,48 +325,65 @@ const CadastroFinanceiro = () => {
             />
 
             <FormControl fullWidth sx={{ mb: 2 }}>
-              <InputLabel>Tipo</InputLabel>
+              <InputLabel>Natureza</InputLabel>
               <Select
-                name="tipo"
-                value={formData.tipo}
+                name="natureza"
+                value={formData.natureza}
                 onChange={handleChange}
                 required
               >
-                <MenuItem value="SIMPLES">Simples</MenuItem>
-                <MenuItem value="MENSAL">Mensal</MenuItem>
+                <MenuItem value="ENTRADA">Entrada (Receita)</MenuItem>
+                <MenuItem value="SAIDA">Saída (Despesa)</MenuItem>
               </Select>
             </FormControl>
 
-            <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ptBR}>
-              <DatePicker
-                label="Data de Vencimento"
-                value={formData.data_vencimento}
-                onChange={(newValue) => {
-                  setFormData(prev => ({
-                    ...prev,
-                    data_vencimento: newValue
-                  }));
-                }}
-                sx={{ width: '100%', mb: 2 }}
-                slotProps={{
-                  textField: {
-                    required: true,
-                    fullWidth: true
-                  }
-                }}
-              />
-            </LocalizationProvider>
+            {formData.natureza === 'SAIDA' && (
+              <>
+                <FormControl fullWidth sx={{ mb: 2 }}>
+                  <InputLabel>Tipo</InputLabel>
+                  <Select
+                    name="tipo"
+                    value={formData.tipo}
+                    onChange={handleChange}
+                    required
+                  >
+                    <MenuItem value="SIMPLES">Simples</MenuItem>
+                    <MenuItem value="MENSAL">Mensal</MenuItem>
+                  </Select>
+                </FormControl>
 
-            {formData.tipo === 'MENSAL' && (
-              <TextField
-                fullWidth
-                label="Quantidade de Meses"
-                name="quantidade_meses"
-                type="number"
-                value={formData.quantidade_meses}
-                onChange={handleChange}
-                sx={{ mb: 2 }}
-              />
+                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ptBR}>
+                  <DatePicker
+                    label="Data de Vencimento"
+                    value={formData.data_vencimento}
+                    onChange={(newValue) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        data_vencimento: newValue
+                      }));
+                    }}
+                    sx={{ width: '100%', mb: 2 }}
+                    slotProps={{
+                      textField: {
+                        required: true,
+                        fullWidth: true
+                      }
+                    }}
+                  />
+                </LocalizationProvider>
+
+                {formData.tipo === 'MENSAL' && (
+                  <TextField
+                    fullWidth
+                    label="Quantidade de Meses"
+                    name="quantidade_meses"
+                    type="number"
+                    value={formData.quantidade_meses}
+                    onChange={handleChange}
+                    sx={{ mb: 2 }}
+                  />
+                )}
+              </>
             )}
           </Box>
         </DialogContent>
@@ -353,18 +400,46 @@ const CadastroFinanceiro = () => {
         </DialogActions>
       </Dialog>
 
-      <Box sx={{ height: 400, width: '100%' }}>
+      <Box sx={{ 
+        height: 'calc(100vh - 140px)', 
+        width: '100%',
+        '& .valor-entrada': {
+          color: 'success.main',
+          fontWeight: 'bold'
+        },
+        '& .valor-saida': {
+          color: 'error.main',
+          fontWeight: 'bold'
+        }
+      }}>
         <DataGrid
           rows={contas}
           columns={columns}
           initialState={{
             pagination: {
-              paginationModel: { pageSize: 5 }
+              paginationModel: { pageSize: 10 }
+            },
+            sorting: {
+              sortModel: [{ field: 'data_vencimento', sort: 'desc' }]
             }
           }}
-          pageSizeOptions={[5, 10, 25]}
+          pageSizeOptions={[10, 25, 50]}
           disableRowSelectionOnClick
           loading={loading}
+          getCellClassName={(params) => {
+            if (params.field === 'valor') {
+              return params.row.natureza === 'ENTRADA' ? 'valor-entrada' : 'valor-saida';
+            }
+            return '';
+          }}
+          sx={{
+            boxShadow: 2,
+            border: 2,
+            borderColor: 'primary.light',
+            '& .MuiDataGrid-cell:hover': {
+              color: 'primary.main',
+            },
+          }}
         />
       </Box>
 
